@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Flap Bird</title>
+    <script src="sprite.js"></script>
+    <script src="bird.js"></script>
+  </head>
+  <body>
+    <h1>Flap Bird</h1>
+    <canvas width="480" height="320">
+      Seu browser não suporta canvas!</canvas>
+    <script>
+
+    var tela = document.getElementsByTagName("canvas")[0];
+    var ctx = tela.getContext("2d");
+    var G = 200;
+
+    var dt = anterior = 0;
+    var player = new Bird();
+    var estado = 3;
+
+    var melhorPontuacao = 0;
+    //var estadoJogada = false;     //Se perdeu ou não
+    var posicaoRandPlataforma = 0;
+    var tempoInicioPartida = 5;   //Tempo até o objeto começar a cair
+    var tempoGameOver = 5;
+    var tempoInsere = 0;          //Tempo pra inserir elementos
+
+    //Plataformas
+    var chao = new Sprite();
+    var plataforma = new Sprite();
+
+    //Barras
+    var barras = [];
+
+
+    //Energia
+    var energiaRectExt = new Sprite();
+    var energiaRectInt = new Sprite();
+    energiaRectExt.w = 102;
+    energiaRectExt.y = 20;
+    energiaRectExt.colorBG = "black";
+    energiaRectExt.colorBorder = "white";
+    energiaRectExt.x = 8;
+    energiaRectExt.y = 32;
+    energiaRectInt.w = 100;
+    energiaRectInt.h = 13;
+    energiaRectInt.x = 9;
+    energiaRectInt.y = 33;
+    energiaRectInt.colorBG = "green";
+    energiaRectInt.borderSize = 0;
+
+    posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
+    plataforma.y = tela.height - 15;
+    plataforma.w = 50;
+
+
+    //Main Menu campos
+    var fontMainMenu = "30px Arial Black";
+    var wordsColor = "white";
+    var alignMainMenu = "center";
+    var stateMainMenu = 0;
+
+    /**************************************************
+      *           Estados:
+      * 0 - Venceu;         //Pousou no ponto certo e com energia e será iniciada uma nova fase
+      * 1 - Repara elementos;//Ajusta determinados elementos do jogo, como pontos e posições de elementos
+      * 2 - Jogando;        //Durante a partida
+      * 3 - Menu;           //Main menu tem duas opções: "new game" e "quit";
+      * 4 - Game over;      //Exibe uma mensagem de game over na tela
+      * 5 - Fechado;        //Tela preta
+      ***************************************************/
+
+
+    function passo(t) {
+      dt = (t - anterior)/1000;
+
+
+      switch (estado) {
+        case 0:
+          posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
+          player.pontos = player.pontos + 100 + Math.ceil(player.energia);
+
+          estado = 1;
+
+          break;
+        case 1:
+          player.x = tela.width/2 -15;
+          player.y = player.h;
+          tempoInicioPartida = 5;
+          energiaRectInt.w = 100;
+          player.energia = 100;
+
+          estado = 2;
+          break;
+        case 2:
+          limparTela();
+          ctx.font = "20px Arial Black";
+          ctx.fillStyle = "white";
+          ctx.textAlign = alignMainMenu;
+          //ctx.fillText("Energia: ", 55,20);
+          ctx.fillText("Pontos: ", tela.width - 120,20);
+          ctx.fillText(player.pontos, tela.width - 50, 20);
+          //ctx.fillText("Vidas:  "+ player.vidas, tela.width - 70, 20);
+          chao.x = 0;
+          chao.y = tela.height - 15;
+          chao.w = tela.width;
+          plataforma.x = posicaoRandPlataforma;
+          plataforma.colorBG = "blue";
+          player.mover(dt);
+          player.impoeLimites(0,0, tela.width, tela.height);
+
+          player.desenhar(ctx);
+
+          break;
+        case 3:         //Main menu
+          limparTela();
+          ctx.fillStyle = wordsColor;
+          ctx.textAlign = alignMainMenu;
+          ctx.font = "40px Arial Black";
+          ctx.fillText("Flap Bird", tela.width/2, tela.height/3);
+          ctx.font = "15px Arial Black";
+          ctx.fillText("Hi-Score: "+ melhorPontuacao,  tela.width/2, tela.height/2 + tela.height/3 + 30);
+          ctx.font = fontMainMenu;
+          if(stateMainMenu == 0){
+            ctx.fillStyle = "blue";
+            ctx.fillText("New Game", tela.width/2, tela.height/2 + tela.height/4-15);
+            ctx.fillStyle = wordsColor;
+            ctx.fillText("Quit", tela.width/2, tela.height/2 + tela.height/3);
+          }
+          else{
+            ctx.fillStyle = wordsColor;
+            ctx.fillText("New Game", tela.width/2, tela.height/2 + tela.height/4-15);
+            ctx.fillStyle = "blue";
+            ctx.fillText("Quit", tela.width/2, tela.height/2 + tela.height/3);
+          }
+
+          break;
+        case 4:
+          limparTela();
+          ctx.fillStyle = "white";
+          ctx.textAlign = alignMainMenu;
+          ctx.font = "40px Arial Black";
+          ctx.fillText("GAME OVER", tela.width/2, tela.height/2);
+          if(tempoGameOver >= 0){
+              tempoGameOver = tempoGameOver - 0.7*dt;
+          }
+          else{
+              estado = 3;
+          }
+
+          break;
+        case 5:
+          limparTela();
+          break;
+        default:
+
+      }
+
+      anterior = t;
+      requestAnimationFrame(passo);
+    }
+
+    requestAnimationFrame(passo);
+
+    function limparTela() {
+      ctx.fillStyle = "rgb(10,110,155)";
+      ctx.fillRect(0,0, tela.width, tela.height);
+    }
+
+    addEventListener("keydown", function(e){
+      console.log(e.keyCode);
+      if (estado != 3) {
+        //if(tempoInicioPartida <= 0){
+          switch (e.keyCode) {
+            case 37:
+              player.ax = -100;
+              break;
+            case 39:
+              player.ax = +100;
+              break;
+            case 38:
+              //player.ay = -3000;
+              player.vy = -200;
+              break;
+            case 40:
+              player.ay = +100;
+              break;
+            case 27:      //Pressionar o Esq
+              stateMainMenu = 0;
+              estado = 3;
+              break;
+            default:
+          }
+        //}
+      }
+      else{
+        switch (e.keyCode) {
+          case 13:    //Enter
+            if(stateMainMenu == 0){
+              estado = 1;
+              posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
+            }
+            else{
+              estado = 5;
+            }
+            break;
+          case 32:         //Space bar
+            if(stateMainMenu == 0){
+              estado = 1;
+              posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
+            }
+            else{
+              estado = 5;
+            }
+            break;
+          case 38:
+            if(stateMainMenu == 1){
+              stateMainMenu = 0;
+            }
+            break;
+          case 40:
+            if(stateMainMenu == 0){
+              stateMainMenu = 1;
+            }
+            break;
+          case 27:      //Pressionar o Esq
+            stateMainMenu = 0;
+            estado = 3;
+            break;
+          default:
+
+        }
+      }
+
+    });
+    addEventListener("keyup", function(e){
+      switch (e.keyCode) {
+        case 37:
+        case 39:
+          player.ax = 0;
+          break;
+        case 38:
+        case 40:
+          player.ay = 0;
+          break;
+        default:
+      }
+    });
+
+    </script>
+  </body>
+</html>
