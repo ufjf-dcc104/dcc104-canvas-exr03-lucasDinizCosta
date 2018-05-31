@@ -5,17 +5,27 @@
     <title>Flap Bird</title>
     <script src="sprite.js"></script>
     <script src="bird.js"></script>
+    <script src="ImageLibrary.js" charset="utf-8"></script>
+    <script src="AudioLibrary.js" charset="utf-8"></script>
   </head>
   <body>
-    <h1>Flap Bird</h1>
-    <canvas width="480" height="320">
+    <h1>Flappy Bird</h1>
+    <canvas width="480" height="320"> //480,320
       Seu browser não suporta canvas!</canvas>
     <script>
-
     var tela = document.getElementsByTagName("canvas")[0];
+    tela.style.border = '2px solid #000';                       //Colocando borda no canvas
+    /*
+    <canvas id="canvas" width="500" height="500" style="border: 1px solid black;">
+    Your browser does not support the HTML 5 Canvas.
+    </canvas>
+    */
     var ctx = tela.getContext("2d");
+    var imageLibrary = new ImageLibrary();
+    imageLibrary.load("spriteSheet", "SpriteSheet.png");
+    var audioLibrary = new AudioLibrary();
+    //audioLibrary.load("tank-firing","Tank_Firing.mp3");
     var G = 200;
-
     var dt = anterior = 0;
     var player = new Bird();
     var estado = 3;
@@ -75,89 +85,96 @@
 
     function passo(t) {
       dt = (t - anterior)/1000;
-
-
-      switch (estado) {
-        case 0:
-          posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
-          player.pontos = player.pontos + 100 + Math.ceil(player.energia);
-
-          estado = 1;
-
-          break;
-        case 1:
-          player.x = tela.width/2 -15;
-          player.y = player.h;
-          tempoInicioPartida = 5;
-          energiaRectInt.w = 100;
-          player.energia = 100;
-
-          estado = 2;
-          break;
-        case 2:
-          limparTela();
-          ctx.font = "20px Arial Black";
-          ctx.fillStyle = "white";
-          ctx.textAlign = alignMainMenu;
-          //ctx.fillText("Energia: ", 55,20);
-          ctx.fillText("Pontos: ", tela.width - 120,20);
-          ctx.fillText(player.pontos, tela.width - 50, 20);
-          //ctx.fillText("Vidas:  "+ player.vidas, tela.width - 70, 20);
-          chao.x = 0;
-          chao.y = tela.height - 15;
-          chao.w = tela.width;
-          plataforma.x = posicaoRandPlataforma;
-          plataforma.colorBG = "blue";
-          player.mover(dt);
-          player.impoeLimites(0,0, tela.width, tela.height);
-
-          player.desenhar(ctx);
-
-          break;
-        case 3:         //Main menu
-          limparTela();
-          ctx.fillStyle = wordsColor;
-          ctx.textAlign = alignMainMenu;
-          ctx.font = "40px Arial Black";
-          ctx.fillText("Flap Bird", tela.width/2, tela.height/3);
-          ctx.font = "15px Arial Black";
-          ctx.fillText("Hi-Score: "+ melhorPontuacao,  tela.width/2, tela.height/2 + tela.height/3 + 30);
-          ctx.font = fontMainMenu;
-          if(stateMainMenu == 0){
-            ctx.fillStyle = "blue";
-            ctx.fillText("New Game", tela.width/2, tela.height/2 + tela.height/4-15);
-            ctx.fillStyle = wordsColor;
-            ctx.fillText("Quit", tela.width/2, tela.height/2 + tela.height/3);
-          }
-          else{
-            ctx.fillStyle = wordsColor;
-            ctx.fillText("New Game", tela.width/2, tela.height/2 + tela.height/4-15);
-            ctx.fillStyle = "blue";
-            ctx.fillText("Quit", tela.width/2, tela.height/2 + tela.height/3);
-          }
-
-          break;
-        case 4:
-          limparTela();
-          ctx.fillStyle = "white";
-          ctx.textAlign = alignMainMenu;
-          ctx.font = "40px Arial Black";
-          ctx.fillText("GAME OVER", tela.width/2, tela.height/2);
-          if(tempoGameOver >= 0){
-              tempoGameOver = tempoGameOver - 0.7*dt;
-          }
-          else{
-              estado = 3;
-          }
-
-          break;
-        case 5:
-          limparTela();
-          break;
-        default:
-
+      if(imageLibrary.loaded+audioLibrary.loaded<imageLibrary.size+audioLibrary.size) {//if(il.loaded+al.loaded<il.size+al.size) {
+        //ctx.fillStyle = "white";
+        //ctx.fillText("Carregando imagens e audio... "+(100*(il.loaded+al.loaded)/(il.size+al.loaded)).toFixed(2)+"%", 20, 100);
+        console.log("Carregando imagens e audio... "+(100*(imageLibrary.loaded+audioLibrary.loaded)/(imageLibrary.size+audioLibrary.size)).toFixed(2)+"%", 20, 100);
+        console.log("Não terminou de carregar...");
+        //return;
       }
+      else{
+        switch (estado) {
+          case 0:
+            posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
+            player.pontos = player.pontos + 100 + Math.ceil(player.energia);
 
+            estado = 1;
+
+            break;
+          case 1:
+            player.x = tela.width/2 -15;
+            player.y = player.h;
+            tempoInicioPartida = 5;
+            energiaRectInt.w = 100;
+            player.energia = 100;
+
+            estado = 2;
+            break;
+          case 2:
+            limparTela();
+            ctx.font = "20px Arial Black";
+            ctx.fillStyle = "white";
+            ctx.textAlign = alignMainMenu;
+            //ctx.fillText("Energia: ", 55,20);
+            ctx.fillText("Pontos: ", tela.width - 120,20);
+            ctx.fillText(player.pontos, tela.width - 50, 20);
+            //ctx.fillText("Vidas:  "+ player.vidas, tela.width - 70, 20);
+            chao.x = 0;
+            chao.y = tela.height - 15;
+            chao.w = tela.width;
+            plataforma.x = posicaoRandPlataforma;
+            plataforma.colorBG = "blue";
+            player.mover(dt);
+            player.impoeLimites(0,0, tela.width, tela.height);
+
+            player.desenhar(ctx);
+
+            break;
+          case 3:         //Main menu
+            limparTela();
+            imageLibrary.drawClipSize(ctx, "spriteSheet", 0, 0, 144, 223, 0, 0, tela.width, tela.height);
+            ctx.fillStyle = wordsColor;
+            ctx.textAlign = alignMainMenu;
+            ctx.font = "40px Arial Black";
+            ctx.fillText("Flap Bird", tela.width/2, tela.height/3);
+            ctx.font = "15px Arial Black";
+            ctx.fillText("Hi-Score: "+ melhorPontuacao,  tela.width/2, tela.height/2 + tela.height/3 + 30);
+            ctx.font = fontMainMenu;
+            if(stateMainMenu == 0){
+              ctx.fillStyle = "blue";
+              ctx.fillText("New Game", tela.width/2, tela.height/2 + tela.height/4-15);
+              ctx.fillStyle = wordsColor;
+              ctx.fillText("Quit", tela.width/2, tela.height/2 + tela.height/3);
+            }
+            else{
+              ctx.fillStyle = wordsColor;
+              ctx.fillText("New Game", tela.width/2, tela.height/2 + tela.height/4-15);
+              ctx.fillStyle = "blue";
+              ctx.fillText("Quit", tela.width/2, tela.height/2 + tela.height/3);
+            }
+
+            break;
+          case 4:
+            limparTela();
+            ctx.fillStyle = "white";
+            ctx.textAlign = alignMainMenu;
+            ctx.font = "40px Arial Black";
+            ctx.fillText("GAME OVER", tela.width/2, tela.height/2);
+            if(tempoGameOver >= 0){
+                tempoGameOver = tempoGameOver - 0.7*dt;
+            }
+            else{
+                estado = 3;
+            }
+
+            break;
+          case 5:
+            limparTela();
+            break;
+          default:
+
+        }
+      }
       anterior = t;
       requestAnimationFrame(passo);
     }
@@ -200,7 +217,6 @@
           case 13:    //Enter
             if(stateMainMenu == 0){
               estado = 1;
-              posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
             }
             else{
               estado = 5;
@@ -209,7 +225,6 @@
           case 32:         //Space bar
             if(stateMainMenu == 0){
               estado = 1;
-              posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
             }
             else{
               estado = 5;
