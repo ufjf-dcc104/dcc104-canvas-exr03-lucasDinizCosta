@@ -15,7 +15,7 @@ function Bird() {
   this.energia = 100;
 }
 
-Bird.prototype.desenhar = function (ctx) {
+/*Bird.prototype.desenhar = function (ctx) {
   ctx.fillStyle = this.cor;
   ctx.strokeStyle = 'white';
   ctx.lineWidth = 2;
@@ -28,6 +28,35 @@ Bird.prototype.desenhar = function (ctx) {
   ctx.fill();
   ctx.stroke();
   ctx.closePath();
+}*/
+
+Bird.prototype.desenhar = function (ctx) {
+  //this.w = 32;
+  //this.h = 32;
+
+  //imageLibrary.drawClipAngle(ctx, "asteroides", this.sx, this.sy, this.w, this.h, this.x, this.y, this.ang);
+  //imageLibrary.draw(ctx, "tijolo-laser", this.x, this.y);
+  ctx.fillStyle = this.cor;
+  ctx.strokeStyle = "yellow";
+  ctx.lineWidth = 2;
+  ctx.fillRect(this.x, this.y,this.w,this.h);
+  ctx.strokeRect(this.x, this.y,this.w,this.h);
+
+  //console.log("TESTE");
+  /*ctx.fillStyle = this.cor;
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 2;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(this.x, this.y);
+  ctx.lineTo(this.x + this.w/2, this.y + this.h);
+  ctx.lineTo(this.x + this.w, this.y);
+  ctx.lineTo(this.x, this.y);
+  ctx.fill();
+  ctx.stroke();
+  //ctx.rotate(Math.PI);
+
+  ctx.closePath();*/
 }
 
 Bird.prototype.mover = function (dt) {
@@ -60,9 +89,9 @@ Bird.prototype.impoeLimites = function(x, y, w, h){
 };
 
 Bird.prototype.colidiuCom = function (alvo) {
-  if(alvo.x+alvo.w < this.x) return false;
-  if(alvo.x > this.x+this.w) return false;
-  if(alvo.y+alvo.h < this.y+this.h) return false;
-  if(alvo.y > this.y+this.h) return false;
+  if(alvo.x + alvo.w < this.x)  return false;
+  if(alvo.x > this.x + this.w)  return false;
+  if(alvo.y + alvo.h < this.y)  return false;
+  if(alvo.y > this.y + this.h)  return false;
   return true;
 };

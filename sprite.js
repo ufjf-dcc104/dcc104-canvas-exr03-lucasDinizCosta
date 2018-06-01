@@ -6,6 +6,12 @@ function Sprite() {
   this.colorBG = "grey";
   this.colorBorder = "yellow";
   this.borderSize = 1;
+
+  //imagem status
+  this.wImagem = 0;
+  this.hImagem = 0;
+  this.sx = 0;
+  this.sy = 0;
 }
 
 Sprite.prototype.desenhar = function (ctx) {
@@ -14,6 +20,10 @@ Sprite.prototype.desenhar = function (ctx) {
   ctx.lineWidth = this.borderSize;
   ctx.fillRect(this.x, this.y, this.w, this.h);
   ctx.strokeRect(this.x, this.y, this.w, this.h);
+}
+
+Sprite.prototype.desenharChao = function (ctx) {
+  imageLibrary.drawClipSize(ctx, "spriteSheet", this.sx, this.sy, this.wImagem, this.hImagem, this.x, this.y, this.w, this.h);    //chão
 }
 
 Sprite.prototype.colidiuCom = function (alvo) {
