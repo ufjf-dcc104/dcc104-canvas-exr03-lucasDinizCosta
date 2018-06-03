@@ -7,12 +7,9 @@ function Bird() {
   this.vy = 0;
   this.ax = 0;
   this.ay = 0;
-  this.acel = 0;
   this.cor = "grey";
-  this.vento = 0;
   this.pontos = 0;
-  this.vidas = 3;
-  this.energia = 100;
+  //this.sprite = new Sprite();
 }
 
 /*Bird.prototype.desenhar = function (ctx) {

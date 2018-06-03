@@ -2,9 +2,11 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Flap Bird</title>
+    <title>Flappy Bird</title>
     <script src="sprite.js"></script>
     <script src="bird.js"></script>
+    <script src="ground.js"></script>
+    <script src="pipe.js"></script>
     <script src="ImageLibrary.js" charset="utf-8"></script>
     <script src="AudioLibrary.js" charset="utf-8"></script>
   </head>
@@ -25,7 +27,7 @@
     imageLibrary.load("spriteSheet", "SpriteSheet.png");
     var audioLibrary = new AudioLibrary();
     //audioLibrary.load("tank-firing","Tank_Firing.mp3");
-    var G = 200;
+    var G = 500;          //G = 200;
     var dt = anterior = 0;
     var player = new Bird();
     var estado = 1;
@@ -38,7 +40,7 @@
 
     //Elementos da fase
     var chao = [];
-    chao.push(new Sprite());
+    /*chao.push(new Sprite());
     chao[0].wImagem = 168;
     chao[0].hImagem = 56;
     chao[0].sx = 292;
@@ -55,11 +57,25 @@
     chao[1].x = chao[0].x + chao[0].w-2;
     chao[1].y = tela.height-56;
     chao[1].w = tela.width+15;
-    chao[1].h = 56;
+    chao[1].h = 56;*/
+    chao.push(new Ground());
+    chao[0].sprite.x = 0;
+    chao[0].sprite.y = tela.height-56;
+    chao[0].sprite.w = tela.width+15;
+    chao[0].sprite.h = 56;
+    chao.push(new Ground());
+    chao[1].sprite.x = chao[0].sprite.x + chao[0].sprite.w-2;
+    chao[1].sprite.y = tela.height-56;
+    chao[1].sprite.w = tela.width+15;
+    chao[1].sprite.h = 56;
 
+    //
     //imageLibrary.drawClipSize(ctx, "spriteSheet", 292, 0, 168, 56, 0, tela.height-56, tela.width, 56);    //chão
 
-
+    var barreira = [];
+    barreira.push(new Pipe());
+    barreira[0].testePosicionamento(200);
+    
     //Main Menu campos
     var fontMainMenu = "30px Arial Black";
     var wordsColor = "white";
@@ -105,17 +121,19 @@
             limparTela();
             imageLibrary.drawClipSize(ctx, "spriteSheet", 0, 0, 144, 223, 0, 0, tela.width, tela.height-56);      //Background
             //imageLibrary.drawClipSize(ctx, "spriteSheet", 292, 0, 168, 56, 0, tela.height-56, tela.width, 56);    //chão
-            chao[0].x = chao[0].x -velFase*dt;
-            chao[0].desenharChao(ctx);
+            chao[0].sprite.x = chao[0].sprite.x - velFase*dt;
+            chao[1].sprite.x = chao[1].sprite.x - velFase*dt;
+            chao[0].desenhar(ctx);
             //imageLibrary.drawClipSize(ctx, "spriteSheet", chao[0].sx, chao[0].sy, chao[0].wImagem, chao[0].hImagem, chao[0].x, chao[0].y, chao[0].w, chao[0].h);    //chão
-            chao[1].x = chao[1].x -velFase*dt;
-            chao[1].desenharChao(ctx);
-            if(chao[0].x+chao[0].w<=0)
-              chao[0].x = chao[1].x + chao[1].w-2;
-            if(chao[1].x + chao[1].w<=0)
-              chao[1].x = chao[0].x + chao[0].w-2;
+            chao[1].desenhar(ctx);
+            if(chao[0].sprite.x + chao[0].sprite.w <= 0)
+              chao[0].sprite.x = chao[1].sprite.x + chao[1].sprite.w - 2;
+            if(chao[1].sprite.x + chao[1].sprite.w <= 0)
+              chao[1].sprite.x = chao[0].sprite.x + chao[0].sprite.w - 2;
+            barreira[0].mover(dt);
+            barreira[0].desenhar(ctx);
             player.mover(dt);
-            player.impoeLimites(0, 0, tela.width, tela.height-56);
+            player.impoeLimites(0, 0, tela.width, tela.height-56);        //Até o chão
             player.desenhar(ctx);
             ctx.font = "20px Arial Black";
             ctx.fillStyle = "white";
@@ -126,7 +144,6 @@
             ctx.fillText("Pontos: ", tela.width - 120,20);
             ctx.strokeText(player.pontos, tela.width - 50, 20);
             ctx.fillText(player.pontos, tela.width - 50, 20);
-
             break;
           case 3:         //Main menu
             limparTela();

@@ -3,6 +3,10 @@ function Sprite() {
   this.y = 100;
   this.w = 20;
   this.h = 15;
+  this.vx = 0;
+  this.vy = 0;
+  this.ax = 0;
+  this.ay = 0;
   this.colorBG = "grey";
   this.colorBorder = "yellow";
   this.borderSize = 1;
@@ -12,6 +16,13 @@ function Sprite() {
   this.hImagem = 0;
   this.sx = 0;
   this.sy = 0;
+}
+
+Sprite.prototype.mover = function (dt) {
+    this.vx = this.vx + this.ax*dt;
+    this.vy = this.vy + (G+this.ay)*dt;
+    this.x = this.x + this.vx*dt;
+    this.y = this.y + this.vy*dt;
 }
 
 Sprite.prototype.desenhar = function (ctx) {
