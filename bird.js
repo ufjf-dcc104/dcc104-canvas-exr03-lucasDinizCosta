@@ -9,6 +9,12 @@ function Bird() {
   this.sprite.sx = 31;
   this.sprite.sy = 491;
   this.pontos = 0;
+
+
+  /*************************
+  *-Trabalha com animação--*
+  *************************/
+
   this.animacao = [];
   this.animacao.push(new Sprite());
   this.animacao.push(new Sprite());
