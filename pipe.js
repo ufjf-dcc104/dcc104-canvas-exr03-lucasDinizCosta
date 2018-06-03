@@ -30,6 +30,9 @@ function Pipe() {
   this.sprite[1].sx = 84;
   this.sprite[1].sy = 322;
   this.sprite[1].vx = this.velocidade;
+
+
+  this.pontuou = false;               //pontua o player se passar no meio dos canos
 }
 
 Pipe.prototype.mover = function(dt){
@@ -69,7 +72,7 @@ Pipe.prototype.alteraYInicioEntreCanos = function(yInicioEntreCanos){
 
 Pipe.prototype.colidiuCom = function(alvo){
   for(var i = 0; i < 2; i++){
-    if(alvo.colidiuCom(sprite[i])){
+    if(alvo.colidiuCom(this.sprite[i])){
       return true;
     }
   }

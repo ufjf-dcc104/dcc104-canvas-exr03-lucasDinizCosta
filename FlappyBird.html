@@ -32,7 +32,7 @@
     var player = new Bird();
     var estado = 2;
     var melhorPontuacao = 0;
-    var tempoGameOver = 5;
+    var tempoGameOver = 2;      //5
     var velFase = 200;
     var chao = new Ground(tela);
     var barreira = [];
@@ -95,7 +95,17 @@
               }
               player.mover(dt);
               player.impoeLimites(0, 0, tela.width, tela.height-56);        //Até o chão
-
+              for (var i = 0; i < barreira.length; i++) {
+                if(barreira[i].colidiuCom(player.sprite)){
+                  estado = 2;
+                }
+                else{
+                  if((player.sprite.x >= barreira[i].sprite[0].x) && (player.sprite.x <= barreira[i].sprite[0].x + barreira[i].sprite[0].w) && (barreira[i].pontuou == false)){
+                     barreira[i].pontuou = true;
+                     player.pontos += 1;
+                  }
+                }
+              }
               if(player.colidiuCom(chao.sprite[0])||player.colidiuCom(chao.sprite[1])){
                 estado = 2;
               }
@@ -164,7 +174,7 @@
                 }
                 player = null;
                 iniciarPartida = false;
-                tempoGameOver = 5;
+                tempoGameOver = 2;
                 estado = 1;
             }
 
@@ -217,7 +227,7 @@
             limparTela();
             iniciarPartida = false;
             player = null;
-            tempoGameOver = 5;
+            tempoGameOver = 2;
             stateMainMenu = 0;
             estado = 1;
             break;
@@ -262,7 +272,7 @@
             stateMainMenu = 0;
             barreira.splice(0, barreira.length);
             iniciarPartida = false;
-            tempoGameOver = 5;
+            tempoGameOver = 2;
             player = null;
             estado = 1;
             break;
