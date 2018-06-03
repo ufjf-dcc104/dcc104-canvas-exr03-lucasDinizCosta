@@ -149,7 +149,7 @@
 
             break;
           case 2:
-          //  limparTela();
+            limparTela();
             ctx.fillStyle = "white";
             ctx.textAlign = alignMainMenu;
             ctx.font = "40px Arial Black";
@@ -159,6 +159,11 @@
             }
             else{
                 barreira.splice(0, barreira.length);
+                if(player.pontos > melhorPontuacao){
+                  melhorPontuacao = player.pontos;
+                }
+                player = null;
+                iniciarPartida = false;
                 tempoGameOver = 5;
                 estado = 1;
             }
