@@ -39,7 +39,7 @@
     //posicaoRandPlataforma = Math.floor(Math.random() * (tela.width - plataforma.w));
 
     //Elementos da fase
-    var chao = [];
+
     /*chao.push(new Sprite());
     chao[0].wImagem = 168;
     chao[0].hImagem = 56;
@@ -58,7 +58,9 @@
     chao[1].y = tela.height-56;
     chao[1].w = tela.width+15;
     chao[1].h = 56;*/
-    chao.push(new Ground());
+
+    var chao = new Ground(tela);
+    /*chao.push(new Ground());
     chao[0].sprite.x = 0;
     chao[0].sprite.y = tela.height-56;
     chao[0].sprite.w = tela.width+15;
@@ -67,7 +69,7 @@
     chao[1].sprite.x = chao[0].sprite.x + chao[0].sprite.w-2;
     chao[1].sprite.y = tela.height-56;
     chao[1].sprite.w = tela.width+15;
-    chao[1].sprite.h = 56;
+    chao[1].sprite.h = 56;*/
 
     //
     //imageLibrary.drawClipSize(ctx, "spriteSheet", 292, 0, 168, 56, 0, tela.height-56, tela.width, 56);    //chão
@@ -75,7 +77,13 @@
     var barreira = [];
     barreira.push(new Pipe());
     barreira[0].testePosicionamento(200);
-    
+
+    var maxY = 160;
+    var minY = 40;
+    var espEntreBarreiras = 250;
+    var distEntreCanos = 80;
+    var atingiuPontos = false;                  //A cada 15 pontos o esp Entre Barreiras diminui 10 até chegar a 60
+
     //Main Menu campos
     var fontMainMenu = "30px Arial Black";
     var wordsColor = "white";
@@ -118,22 +126,36 @@
             estado = 2;
             break;
           case 2:
-            limparTela();
+            //limparTela();
             imageLibrary.drawClipSize(ctx, "spriteSheet", 0, 0, 144, 223, 0, 0, tela.width, tela.height-56);      //Background
             //imageLibrary.drawClipSize(ctx, "spriteSheet", 292, 0, 168, 56, 0, tela.height-56, tela.width, 56);    //chão
-            chao[0].sprite.x = chao[0].sprite.x - velFase*dt;
-            chao[1].sprite.x = chao[1].sprite.x - velFase*dt;
-            chao[0].desenhar(ctx);
-            //imageLibrary.drawClipSize(ctx, "spriteSheet", chao[0].sx, chao[0].sy, chao[0].wImagem, chao[0].hImagem, chao[0].x, chao[0].y, chao[0].w, chao[0].h);    //chão
-            chao[1].desenhar(ctx);
-            if(chao[0].sprite.x + chao[0].sprite.w <= 0)
-              chao[0].sprite.x = chao[1].sprite.x + chao[1].sprite.w - 2;
-            if(chao[1].sprite.x + chao[1].sprite.w <= 0)
-              chao[1].sprite.x = chao[0].sprite.x + chao[0].sprite.w - 2;
-            barreira[0].mover(dt);
-            barreira[0].desenhar(ctx);
+
+            //barreira[0].mover(dt);
+            //barreira[0].desenhar(ctx);
+            chao.mover(dt, velFase);
+            for(var i = 0; i < barreira.length;i++){
+              if(barreira[i].sprite[0].x + barreira[i].sprite[0].w <= 0){
+                barreira.splice(i, 1);
+              }
+              else{
+                barreira[i].mover(dt);
+              }
+            }
+            if(barreira.length != 0){
+              if(tela.width - (barreira[barreira.length-1].sprite[0].x + barreira[barreira.length-1].sprite[0].w) >= espEntreBarreiras){
+                criarBarreira();
+              }
+            }
+            else{
+              criarBarreira();
+            }
             player.mover(dt);
             player.impoeLimites(0, 0, tela.width, tela.height-56);        //Até o chão
+
+            for(var i = 0; i < barreira.length;i++){
+              barreira[i].desenhar(ctx);
+            }
+            chao.desenhar(ctx);
             player.desenhar(ctx);
             ctx.font = "20px Arial Black";
             ctx.fillStyle = "white";
@@ -146,7 +168,7 @@
             ctx.fillText(player.pontos, tela.width - 50, 20);
             break;
           case 3:         //Main menu
-            limparTela();
+            //limparTela();
             //imageLibrary.drawClipSize(ctx, "spriteSheet", 0, 0, 144, 223, 0, 0, tela.width, tela.height);
             imageLibrary.drawClipSize(ctx, "spriteSheet", 0, 0, 144, 223, 0, 0, tela.width, tela.height-56);      //Background
             imageLibrary.drawClipSize(ctx, "spriteSheet", 292, 0, 168, 56, 0, tela.height-56, tela.width, 56);    //chão
@@ -180,7 +202,7 @@
 
             break;
           case 4:
-            limparTela();
+            //limparTela();
             ctx.fillStyle = "white";
             ctx.textAlign = alignMainMenu;
             ctx.font = "40px Arial Black";
@@ -194,7 +216,9 @@
 
             break;
           case 5:
-            limparTela();
+            //limparTela();
+            imageLibrary.drawClipSize(ctx, "spriteSheet", 0, 0, 144, 223, 0, 0, tela.width, tela.height-56);      //Background
+            imageLibrary.drawClipSize(ctx, "spriteSheet", 292, 0, 168, 56, 0, tela.height-56, tela.width, 56);    //chão
             break;
           default:
 
@@ -211,23 +235,27 @@
       ctx.fillRect(0,0, tela.width, tela.height);
     }
 
+    function criarBarreira(){
+      var y = getRandomArbitrary(minY, maxY);
+      var canos = new Pipe();
+      canos.alteraYInicioEntreCanos(y);
+      canos.alteraDistCanos(distEntreCanos);
+      canos.alteraXCanos(tela.width+10);
+      barreira.push(canos);
+    }
+
+    function getRandomArbitrary(min, max){
+      return Math.floor(Math.random()*(max - min)) + min;                     //Seleciona um valor entre o min e o max
+    }
+
     addEventListener("keydown", function(e){
       console.log(e.keyCode);
       if (estado != 3) {
         //if(tempoInicioPartida <= 0){
           switch (e.keyCode) {
-            case 37:
-              player.ax = -100;
-              break;
-            case 39:
-              player.ax = +100;
-              break;
             case 38:
               //player.ay = -3000;
-              player.vy = -200;
-              break;
-            case 40:
-              player.ay = +100;
+              player.sprite.vy = -200;
               break;
             case 27:      //Pressionar o Esq
               stateMainMenu = 0;
@@ -279,11 +307,11 @@
       switch (e.keyCode) {
         case 37:
         case 39:
-          player.ax = 0;
+          player.sprite.ax = 0;
           break;
         case 38:
         case 40:
-          player.ay = 0;
+          player.sprite.ay = 0;
           break;
         default:
       }
