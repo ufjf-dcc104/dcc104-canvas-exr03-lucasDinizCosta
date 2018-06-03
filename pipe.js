@@ -17,7 +17,6 @@ function Pipe() {
   this.sprite[0].wImagem = 26;
   this.sprite[0].sx = 56;
   this.sprite[0].vx = this.velocidade;
-  //this.sprite[0].h = -this.yInicioEntreCanos - 0;
 
   //Cano de baixo
   this.sprite.push(new Sprite());
@@ -44,18 +43,17 @@ Pipe.prototype.mover = function(dt){
 Pipe.prototype.testePosicionamento = function(x){
   this.sprite[0].x = x;
   this.sprite[1].x = x;
-
 }
 
 Pipe.prototype.desenhar = function(ctx){
-  this.sprite[0].desenharChao(ctx);
-  this.sprite[1].desenharChao(ctx);
+  this.sprite[0].desenhar(ctx);
+  this.sprite[1].desenhar(ctx);
 }
 
 Pipe.prototype.alteraDistCanos = function(distCanos){
   this.distCanos = distCanos;
   this.sprite[1].y = this.distCanos + this.yInicioEntreCanos;     //Muda cano debaixo
-  this.sprite[1].h = tela.height-56-this.sprite[1].y;
+  this.sprite[1].h = tela.height - 56 - this.sprite[1].y;
   this.sprite[1].hImagem = this.sprite[1].h;
 }
 

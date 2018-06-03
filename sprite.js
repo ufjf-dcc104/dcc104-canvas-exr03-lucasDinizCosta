@@ -26,16 +26,7 @@ Sprite.prototype.mover = function (dt) {
 }
 
 Sprite.prototype.desenhar = function (ctx) {
-  /*ctx.fillStyle = this.colorBG;
-  ctx.strokeStyle = this.colorBorder;
-  ctx.lineWidth = this.borderSize;
-  ctx.fillRect(this.x, this.y, this.w, this.h);
-  ctx.strokeRect(this.x, this.y, this.w, this.h);*/
-  imageLibrary.drawClipSize(ctx, "spriteSheet", this.sx, this.sy, this.wImagem, this.hImagem, this.x, this.y, this.w, this.h);    //chão
-}
-
-Sprite.prototype.desenharChao = function (ctx) {
-  imageLibrary.drawClipSize(ctx, "spriteSheet", this.sx, this.sy, this.wImagem, this.hImagem, this.x, this.y, this.w, this.h);    //chão
+  imageLibrary.drawClipSize(ctx, "spriteSheet", this.sx, this.sy, this.wImagem, this.hImagem, this.x, this.y, this.w, this.h);
 }
 
 Sprite.prototype.desenharBarreira = function (ctx) {

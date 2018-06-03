@@ -10,7 +10,6 @@ function Bird() {
   this.sprite.sy = 491;
   this.pontos = 0;
 
-
   /*************************
   *-Trabalha com animação--*
   *************************/

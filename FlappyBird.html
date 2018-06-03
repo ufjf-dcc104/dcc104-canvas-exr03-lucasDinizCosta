@@ -26,7 +26,11 @@
     var imageLibrary = new ImageLibrary();
     imageLibrary.load("spriteSheet", "SpriteSheet.png");
     var audioLibrary = new AudioLibrary();
-    //audioLibrary.load("tank-firing","Tank_Firing.mp3");
+    audioLibrary.load("die","Audios/sfx_die.wav");
+    audioLibrary.load("hit","Audios/sfx_hit.wav");
+    audioLibrary.load("point","Audios/sfx_point.wav");
+    audioLibrary.load("smooshing","Audios/sfx_swooshing.wav");
+    audioLibrary.load("wing","Audios/sfx_wing.wav");
     var G = 500;          //G = 200;
     var dt = anterior = 0;
     var player = new Bird();
@@ -42,6 +46,7 @@
     var distEntreCanos = 80;
     var atingiuPontos = false;                  //A cada 15 pontos o esp Entre Barreiras diminui 10 até chegar a 60
     var iniciarPartida = false;
+    var dificuldade = 0;                      //Toda vez que chegar a 15 o espaço entre objetos diminui
 
     //Main Menu campos
     var fontMainMenu = "30px Arial Black";
@@ -72,11 +77,8 @@
           case 0:
             limparTela();
             imageLibrary.drawClipSize(ctx, "spriteSheet", 0, 0, 144, 223, 0, 0, tela.width, tela.height-56);      //Background
-            if(iniciarPartida == false){
-
-            }
-            else{
-              chao.mover(dt, velFase);
+            chao.mover(dt, velFase);
+            if(iniciarPartida == true){
               for(var i = 0; i < barreira.length;i++){
                 if(barreira[i].sprite[0].x + barreira[i].sprite[0].w <= 0){
                   barreira.splice(i, 1);
@@ -98,15 +100,26 @@
               for (var i = 0; i < barreira.length; i++) {
                 if(barreira[i].colidiuCom(player.sprite)){
                   estado = 2;
+                  audioLibrary.play("hit");
+                  audioLibrary.play("die");
                 }
                 else{
                   if((player.sprite.x >= barreira[i].sprite[0].x) && (player.sprite.x <= barreira[i].sprite[0].x + barreira[i].sprite[0].w) && (barreira[i].pontuou == false)){
                      barreira[i].pontuou = true;
                      player.pontos += 1;
+                     dificuldade += 1;
+                     audioLibrary.play("point");
+                     if((dificuldade == 15) && (espEntreBarreiras >= 90)){
+                       dificuldade = 0;
+                       espEntreBarreiras = espEntreBarreiras - 15;
+                       velFase = velFase + 5;
+                     }
                   }
                 }
               }
               if(player.colidiuCom(chao.sprite[0])||player.colidiuCom(chao.sprite[1])){
+                audioLibrary.play("hit");
+                audioLibrary.play("die");
                 estado = 2;
               }
               for(var i = 0; i < barreira.length;i++){
@@ -168,13 +181,10 @@
                 tempoGameOver = tempoGameOver - 0.7*dt;
             }
             else{
-                barreira.splice(0, barreira.length);
                 if(player.pontos > melhorPontuacao){
                   melhorPontuacao = player.pontos;
                 }
-                player = null;
-                iniciarPartida = false;
-                tempoGameOver = 2;
+                limparDados();
                 estado = 1;
             }
 
@@ -199,6 +209,16 @@
       ctx.fillRect(0,0, tela.width, tela.height);
     }
 
+    function limparDados(){
+      barreira.splice(0, barreira.length);
+      velFase = 200;
+      iniciarPartida = false;
+      player = null;
+      tempoGameOver = 2;
+      dificuldade = 0;
+      stateMainMenu = 0;
+    }
+
     function criarBarreira(){
       var y = getRandomArbitrary(minY, maxY);
       var canos = new Pipe();
@@ -220,15 +240,12 @@
             //player.ay = -3000;
             if(iniciarPartida == false)
               iniciarPartida = true;
+            audioLibrary.play("wing");
             player.sprite.vy = -200;
             break;
           case 27:      //Pressionar o Esq
-            barreira.splice(0, barreira.length);
             limparTela();
-            iniciarPartida = false;
-            player = null;
-            tempoGameOver = 2;
-            stateMainMenu = 0;
+            limparDados();
             estado = 1;
             break;
           default:
@@ -270,10 +287,7 @@
             break;
           case 27:      //Pressionar o Esq
             stateMainMenu = 0;
-            barreira.splice(0, barreira.length);
-            iniciarPartida = false;
-            tempoGameOver = 2;
-            player = null;
+            limparDados();
             estado = 1;
             break;
           default:
@@ -284,13 +298,10 @@
 
     addEventListener("keyup", function(e){
       switch (e.keyCode) {
-        case 37:
-        case 39:
-          player.sprite.ax = 0;
-          break;
         case 38:
         case 40:
-          player.sprite.ay = 0;
+          if(estado == 0)
+            player.sprite.ay = 0;
           break;
         default:
       }
