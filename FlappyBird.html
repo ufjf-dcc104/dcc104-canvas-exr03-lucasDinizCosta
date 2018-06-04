@@ -63,7 +63,6 @@
       * 3 - Fechado;        //Tela preta
       ***************************************************/
 
-
     function passo(t) {
       dt = (t - anterior)/1000;
       if(imageLibrary.loaded+audioLibrary.loaded<imageLibrary.size+audioLibrary.size) {//if(il.loaded+al.loaded<il.size+al.size) {
@@ -294,7 +293,8 @@
         if(estado == 2){
           switch (e.keyCode) {
             case 13:    //Enter
-              melhorPontuacao = player.pontos;
+              if(player.pontos > melhorPontuacao)
+                melhorPontuacao = player.pontos;
               limparDados();
               estado = 1;
               break;
